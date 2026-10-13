@@ -1,0 +1,6 @@
+{
+  "name": "LearnSpace",
+  "description": "แพลตฟอร์มการเรียนรู้และชุมชนการศึกษาออนไลน์ภาษาไทย (Learning Management & Educational Community Platform)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

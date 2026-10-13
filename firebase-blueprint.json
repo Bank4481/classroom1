@@ -1,0 +1,237 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information and role permissions",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email", "description": "User email address" },
+        "displayName": { "type": "string", "maxLength": 100, "description": "Full name or display nickname" },
+        "photoURL": { "type": "string", "maxLength": 500, "description": "Profile avatar image URL" },
+        "role": { "type": "string", "enum": ["student", "teacher", "admin"], "description": "User permission role" },
+        "bio": { "type": "string", "maxLength": 500, "description": "Short bio or study goals" },
+        "enrolledCourses": { "type": "array", "description": "List of enrolled course IDs" },
+        "createdAt": { "type": "string", "description": "ISO timestamp or server timestamp" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp or server timestamp" }
+      },
+      "required": ["uid", "email", "displayName", "role"]
+    },
+    "Course": {
+      "title": "Course",
+      "description": "Educational course catalog item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Course identifier" },
+        "title": { "type": "string", "maxLength": 200, "description": "Course title" },
+        "slug": { "type": "string", "maxLength": 200, "description": "URL slug" },
+        "description": { "type": "string", "maxLength": 2000, "description": "Course synopsis and objectives" },
+        "category": { "type": "string", "maxLength": 100, "description": "Category or subject field" },
+        "level": { "type": "string", "enum": ["beginner", "intermediate", "advanced"], "description": "Difficulty level" },
+        "coverImage": { "type": "string", "maxLength": 500, "description": "Cover banner image URL" },
+        "instructorId": { "type": "string", "description": "Instructor UID" },
+        "instructorName": { "type": "string", "maxLength": 100, "description": "Instructor display name" },
+        "published": { "type": "boolean", "description": "Whether course is publicly visible" },
+        "totalLessons": { "type": "number", "description": "Total lesson count" },
+        "createdAt": { "type": "string", "description": "Created timestamp" },
+        "updatedAt": { "type": "string", "description": "Updated timestamp" }
+      },
+      "required": ["title", "description", "category", "instructorId"]
+    },
+    "Lesson": {
+      "title": "Lesson",
+      "description": "Individual learning module within a course",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Lesson ID" },
+        "courseId": { "type": "string", "description": "Associated course ID" },
+        "title": { "type": "string", "maxLength": 200, "description": "Lesson title" },
+        "order": { "type": "number", "description": "Ordering index" },
+        "summary": { "type": "string", "maxLength": 500, "description": "Short brief" },
+        "contentHtml": { "type": "string", "maxLength": 50000, "description": "Rich text instructional content" },
+        "videoUrl": { "type": "string", "maxLength": 500, "description": "Embedded lecture video URL" },
+        "attachments": { "type": "array", "description": "Supplementary downloadable files" },
+        "published": { "type": "boolean", "description": "Published state" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["courseId", "title", "order"]
+    },
+    "Quiz": {
+      "title": "Quiz",
+      "description": "Assessment quiz attached to course or lesson",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Quiz identifier" },
+        "courseId": { "type": "string", "description": "Course ID" },
+        "lessonId": { "type": "string", "description": "Associated lesson ID" },
+        "title": { "type": "string", "maxLength": 200, "description": "Quiz title" },
+        "passingScore": { "type": "number", "description": "Percentage or score needed to pass" },
+        "questions": { "type": "array", "description": "List of multiple-choice questions" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["courseId", "title", "questions"]
+    },
+    "QuizAttempt": {
+      "title": "QuizAttempt",
+      "description": "Student quiz submission record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Attempt ID" },
+        "quizId": { "type": "string", "description": "Quiz ID" },
+        "courseId": { "type": "string", "description": "Course ID" },
+        "userId": { "type": "string", "description": "Student UID" },
+        "userName": { "type": "string", "description": "Student Name" },
+        "score": { "type": "number", "description": "Achieved score" },
+        "totalScore": { "type": "number", "description": "Maximum score" },
+        "passed": { "type": "boolean", "description": "Whether passing score was achieved" },
+        "submittedAt": { "type": "string", "description": "Submission timestamp" }
+      },
+      "required": ["quizId", "userId", "score", "totalScore"]
+    },
+    "Assignment": {
+      "title": "Assignment",
+      "description": "Homework or practical task specification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Assignment ID" },
+        "courseId": { "type": "string", "description": "Course ID" },
+        "lessonId": { "type": "string", "description": "Associated lesson ID" },
+        "title": { "type": "string", "maxLength": 200, "description": "Assignment title" },
+        "instructions": { "type": "string", "maxLength": 5000, "description": "Detailed prompt and rubric" },
+        "dueDate": { "type": "string", "description": "Deadline timestamp" },
+        "maxScore": { "type": "number", "description": "Max achievable grade" },
+        "allowLate": { "type": "boolean", "description": "Whether late hand-ins are accepted" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["courseId", "title", "instructions", "maxScore"]
+    },
+    "Submission": {
+      "title": "Submission",
+      "description": "Student assignment submission and instructor evaluation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Submission ID" },
+        "assignmentId": { "type": "string", "description": "Assignment ID" },
+        "courseId": { "type": "string", "description": "Course ID" },
+        "studentId": { "type": "string", "description": "Student UID" },
+        "studentName": { "type": "string", "maxLength": 100, "description": "Student Name" },
+        "content": { "type": "string", "maxLength": 5000, "description": "Student written submission text" },
+        "fileUrl": { "type": "string", "maxLength": 500, "description": "Uploaded attachment link" },
+        "fileName": { "type": "string", "maxLength": 200, "description": "Uploaded attachment file name" },
+        "status": { "type": "string", "enum": ["submitted", "graded", "resubmit_required"], "description": "Evaluation status" },
+        "score": { "type": "number", "description": "Graded score" },
+        "feedback": { "type": "string", "maxLength": 2000, "description": "Teacher feedback remarks" },
+        "gradedBy": { "type": "string", "description": "Instructor UID" },
+        "submittedAt": { "type": "string", "description": "Submitted timestamp" },
+        "gradedAt": { "type": "string", "description": "Graded timestamp" }
+      },
+      "required": ["assignmentId", "studentId", "status"]
+    },
+    "Discussion": {
+      "title": "Discussion",
+      "description": "Q&A Forum topic or lesson discussion thread",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Topic ID" },
+        "courseId": { "type": "string", "description": "Course ID or empty for general forum" },
+        "lessonId": { "type": "string", "description": "Lesson ID or empty" },
+        "title": { "type": "string", "maxLength": 200, "description": "Topic title" },
+        "content": { "type": "string", "maxLength": 3000, "description": "Topic body text" },
+        "authorId": { "type": "string", "description": "Author UID" },
+        "authorName": { "type": "string", "maxLength": 100, "description": "Author name" },
+        "authorRole": { "type": "string", "maxLength": 20, "description": "Role badge label" },
+        "replyCount": { "type": "number", "description": "Total reply count" },
+        "isSolved": { "type": "boolean", "description": "Marked as solved" },
+        "isPinned": { "type": "boolean", "description": "Pinned announcement" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["title", "content", "authorId", "authorName"]
+    },
+    "Reply": {
+      "title": "Reply",
+      "description": "Response in a discussion thread",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Reply ID" },
+        "topicId": { "type": "string", "description": "Parent discussion topic ID" },
+        "authorId": { "type": "string", "description": "Author UID" },
+        "authorName": { "type": "string", "maxLength": 100, "description": "Author name" },
+        "authorRole": { "type": "string", "maxLength": 20, "description": "Author role" },
+        "content": { "type": "string", "maxLength": 2000, "description": "Reply message body" },
+        "isAcceptedAnswer": { "type": "boolean", "description": "Marked as best solution" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["topicId", "authorId", "content"]
+    },
+    "UserProgress": {
+      "title": "UserProgress",
+      "description": "Tracks completed lessons per student",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Composite key: userId_lessonId" },
+        "userId": { "type": "string", "description": "Student UID" },
+        "courseId": { "type": "string", "description": "Course ID" },
+        "lessonId": { "type": "string", "description": "Lesson ID" },
+        "completed": { "type": "boolean", "description": "Lesson completed status" },
+        "completedAt": { "type": "string", "description": "Completion timestamp" }
+      },
+      "required": ["userId", "courseId", "lessonId", "completed"]
+    },
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Global settings and home announcement banner",
+      "type": "object",
+      "properties": {
+        "siteName": { "type": "string", "maxLength": 100, "description": "Site title" },
+        "announcementBanner": { "type": "object", "description": "Banner config" },
+        "heroConfig": { "type": "object", "description": "Hero text and highlights" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profile documents"
+    },
+    "/courses/{courseId}": {
+      "schema": { "$ref": "#/entities/Course" },
+      "description": "Courses catalog"
+    },
+    "/lessons/{lessonId}": {
+      "schema": { "$ref": "#/entities/Lesson" },
+      "description": "Course lessons and educational modules"
+    },
+    "/quizzes/{quizId}": {
+      "schema": { "$ref": "#/entities/Quiz" },
+      "description": "Quizzes definitions"
+    },
+    "/quiz_attempts/{attemptId}": {
+      "schema": { "$ref": "#/entities/QuizAttempt" },
+      "description": "User completed quiz attempts"
+    },
+    "/assignments/{assignmentId}": {
+      "schema": { "$ref": "#/entities/Assignment" },
+      "description": "Assignments and homework specs"
+    },
+    "/submissions/{submissionId}": {
+      "schema": { "$ref": "#/entities/Submission" },
+      "description": "Student submissions and grades"
+    },
+    "/discussions/{topicId}": {
+      "schema": { "$ref": "#/entities/Discussion" },
+      "description": "Community and lesson Q&A discussion threads"
+    },
+    "/replies/{replyId}": {
+      "schema": { "$ref": "#/entities/Reply" },
+      "description": "Replies to discussion topics"
+    },
+    "/user_progress/{progressId}": {
+      "schema": { "$ref": "#/entities/UserProgress" },
+      "description": "Progress tracking per user per lesson"
+    },
+    "/site_settings/global": {
+      "schema": { "$ref": "#/entities/SiteSettings" },
+      "description": "Global customizable website configurations"
+    }
+  }
+}
